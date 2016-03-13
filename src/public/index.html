@@ -1,0 +1,34 @@
+<html>
+ <head>
+    <meta charset="UTF-8">
+    <title>TV</title>
+
+    <!-- Bower Components  -->
+    <script src="../../../angular/angular.js"></script>
+    <script src="../../../angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <!-- <script src="../../../jquery/jquery.min.js"></script> -->
+    <!-- <script src="../../../bootstrap/dist/js/bootstrap.min.js"></script> -->
+
+    <script src="./js/main.js"></script>
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="../../../bootstrap/dist/css/bootstrap.css">
+  </head>
+
+  <body ng-app="TV">
+   <div class="page">
+   <div class="container" ng-controller="mainCtrl">
+
+    <div class="show-thumbnail pull-left" ng-repeat="show in shows" ng-click="openShow(show)">
+     <img ng-src="{{ show.thumbnail }}" />
+    </div>
+
+    <!--<video ng-src="{{ '../../show/step2.webm' }}"
+           type="video/webm"
+           controls>
+    </vido> -->
+
+   </div>
+   <div>
+  </body>
+</html>
