@@ -1,75 +1,78 @@
 'use strict';
 
-var path = require('path'),
+let dirTree = require('directory-tree'),
+    path = require('path'),
     logger = require('winston'),
     ffmpeg = require('fluent-ffmpeg'),
     fs = require('fs'),
     Async = require('async'),
     mkdirp = require('mkdirp');
 
+const EXTENSIONS = require('./extensions.js'),
+      MAIN_SHOWS_DIR = 'D:/tv/videos';
+
+
+function isFile (c) { return c.type === 'file'; }
+function isDir (c)  { return c.type === 'directory'; }
+
 module.exports = {
- shows: getShows
-}
+ getTree: function (req, res) {
+  let p = req.params.path ? req.params.path.replace('%2F', '/') : '',
+      tree = dirTree.directoryTree(path.join(MAIN_SHOWS_DIR, p), EXTENSIONS),
+      thumbnailPromises = [];
 
-function getShows (req, res) {
- var mainShowsDir = 'D:/tv/videos';
 
- function getThumbnail (showDir, seasonDir, show) {
-  var videoPath = path.join(mainShowsDir, showDir, seasonDir, show);
-  var servedDir = 'D:/tv/src/public/',
-      thumbnailFolder = path.join('thumbnails', showDir, seasonDir, show.split('.')[0]);
+  tree.children.filter(isDir).forEach((dir) => {
+   thumbnailPromises.push(getThumbnails(dir));
+  });
 
-  console.log("SHOW: " + showDir + seasonDir + show);
-  var options = {
-    count: 1,
-    timemarks: [ '10' ],
-    folder: path.join(servedDir, thumbnailFolder)
-  };
-
-  return new Promise (function (resolve) {
-   mkdirp (path.join (servedDir, 'thumbnails', showDir, seasonDir), function (err) {
-     console.log ('MKDIR DONE');
-     var fpath;
-     ffmpeg(videoPath)
-      .on('filenames', (filenames) => { fpath = path.join(thumbnailFolder, filenames[0]); })
-      .on('end', (err) => { resolve ({ thumbnail: fpath, video: path.join ('videos', showDir, seasonDir, show)}); })
-      .screenshots(options);
+  function getThumbnails (dir) {
+   return new Promise ((resolve) => {
+    var promises = [];
+    dir.children.filter(isDir).forEach((dir) => {
+     thumbnailPromises.push(getThumbnails(dir));
     });
-   });
- }
 
- var promises = [];
-
- fs.readdir (mainShowsDir, readShowDirs);
-
- function readShowDirs (err, mainDir) {
-
-  Async.forEachOf(mainDir, forEachShowDir, thenShow);
-
-  function forEachShowDir (showDir, key, cbShow) {
-   fs.readdir (path.join(mainShowsDir, showDir), function (err, season) {
-
-    Async.forEachOf (season, forEachSeasonDir, thenSeason);
-
-    function forEachSeasonDir (seasonDir, key, cbSeason) {
-     fs.readdir (path.join(mainShowsDir, showDir, seasonDir), function (err, shows) {
-      shows.forEach ((show) => {
-       promises.push(getThumbnail(showDir, seasonDir, show));
-      });
-      cbSeason();       
-     });
-    }
-
-    function thenSeason (e) {
-     cbShow();
-    }
+    dir.children.filter(isFile).forEach((file) => {
+      promises.push(createThumbnail (file));
+    });
+    Promise.all(promises).then((thumbs) => {
+     if (thumbs) {
+      dir.thumbnail = thumbs[0];
+     }
+     resolve(thumbs);
+    });
    });
   }
 
-  function thenShow (e) {
-   Promise.all(promises).then(function (shows) {
-    res.status(200).json(shows);
+  Promise.all(thumbnailPromises).then((thumbnails) => {
+   thumbnails = thumbnails.reduce((e, s) => e.concat(s));
+   tree.children.forEach((c, i) => {
+    c.thumbnail = thumbnails[i];
    });
+   res.status(200).json(tree);
+  }).catch(console.error);
+
+
+  function createThumbnail (show) {
+   const SERVED_DIR = 'D:/tv/src/public/';
+   var parsedPath = path.parse(show.path),
+       thumbnailFolder = path.join('thumbnails', p, parsedPath.dir, parsedPath.base.split('.').join('')),
+       options = { count: 1, timemarks: [ '10' ], folder: path.join(SERVED_DIR, thumbnailFolder) },
+       videoPath = path.join(MAIN_SHOWS_DIR,  p, show.path);
+
+   return new Promise (function (resolve) {
+    mkdirp (path.join (SERVED_DIR, thumbnailFolder), function (err) {
+      var fpath;
+      ffmpeg(videoPath)
+         .on('filenames', (filenames) => {
+          fpath = path.join(thumbnailFolder, filenames[0]);
+          show.thumbnail = fpath;
+         })
+         .on('end', (err) => { resolve (fpath); })
+         .screenshots(options);
+     });
+    });
   }
  }
 }

@@ -1,6 +1,6 @@
 'use strict';
 
-var express = require('express'),
+let express = require('express'),
     path = require('path'),
     logger = require('winston'),
     app = express (),
@@ -8,7 +8,7 @@ var express = require('express'),
     fs = require('fs'),
     Async = require('async'),
     parser = require('body-parser'),
-    vlc = require('./server/vlc.js'),
+    vlc = require('./server/vlc.js')(),
     index = require('./server/index.js');
 
 app.use(parser.json());
@@ -25,7 +25,8 @@ function serveHtml(file_path) {
 app.get('/home', serveHtml('/public/index.html'));
 
 app.post('/vlc', vlc.play);
-app.get('/shows', index.shows);
+app.get('/tree/:path?/', index.getTree);
 
-logger.info ('Starting Candy Beat server on port 8000');
+let port = 8000;
+logger.info (`Starting TV server on port ${port}`);
 app.listen(8000);
