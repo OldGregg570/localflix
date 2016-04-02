@@ -7,7 +7,7 @@ let dirTree = require('directory-tree'),
     fs = require('fs'),
     Async = require('async'),
     mkdirp = require('mkdirp'),
-    config = require('config');
+    config = require('../../config.json');
 
 const EXTENSIONS = require('./extensions.js'),
       MAIN_SHOWS_DIR = config.main_shows_dir;
