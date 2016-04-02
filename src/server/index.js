@@ -69,13 +69,13 @@ module.exports = {
       //  console.log(err);
       // });
 
-     //  ffmpeg(videoPath)
-     //     .on('filenames', (filenames) => {
-     //      fpath = path.join(thumbnailFolder, filenames[0]);
-     //      show.thumbnail = fpath;
-     //     })
-     //     .on('end', (err) => { resolve (fpath); })
-     //     .screenshots(options);
+      ffmpeg(videoPath)
+         .on('filenames', (filenames) => {
+          fpath = path.join(thumbnailFolder, filenames[0]);
+          show.thumbnail = fpath;
+         })
+         .on('end', (err) => { resolve (fpath); })
+         .screenshots(options);
     });
    });
   }
