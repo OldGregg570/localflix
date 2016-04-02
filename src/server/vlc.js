@@ -1,7 +1,8 @@
 'use strict';
 
 const spawn = require('child_process').spawn;
-var http = require('http');
+var http = require('http'),
+    config = require('../../config.json');
 
 module.exports = function () {
  const vlc = spawn('vlc', ['--fullscreen' ] );
@@ -33,8 +34,11 @@ module.exports = function () {
    //http://localhost:8080
   },
   play: function (req, res) {
+
+   console.log(req.body.video);
+   //  D:%5Ctv%5Cvideos%5Cshow%5Cseason%201%5Cjellyfish.mkv'
    var options = {
-    path: '/requests/status.json?command=in_play&input=D:%5Ctv%5Cvideos%5Cshow%5Cseason%201%5Cjellyfish.mkv',
+    path: `/requests/status.json?command=in_play&input=${encodeURIComponent(path.join (config.main_shows_dir, req.body.file))}`,
    };
 
    sendCommand(options).then(() => {
