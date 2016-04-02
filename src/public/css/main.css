@@ -3,8 +3,11 @@
     src: url('../../../fonts/glyphicons-halflings-regular.tff');
 }
 
-.page {
+body {
  background-color: #111;
+}
+
+.page {
  height: 100%;
 }
 
@@ -22,6 +25,7 @@ h1 .btn { top: -4px; }
 
 .show-thumbnail img {
  width: auto;
+ min-width: 250px;
  height: 150px;
  transition: transform 0.2s;
  cursor:pointer;

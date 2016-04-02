@@ -65,17 +65,19 @@ module.exports = {
 
    return new Promise (function (resolve) {
     mkdirp (path.join (SERVED_DIR, thumbnailFolder), function (err) {
+       let fpath = '';
       // fs.writeFile(SERVED_DIR + thumbnailFolder + 'tn.png', {}, function (err) {
       //  console.log(err);
       // });
 
-      ffmpeg(videoPath)
-         .on('filenames', (filenames) => {
-          fpath = path.join(thumbnailFolder, filenames[0]);
-          show.thumbnail = fpath;
-         })
-         .on('end', (err) => { resolve (fpath); })
-         .screenshots(options);
+      // ffmpeg(videoPath)
+      //    .on('filenames', (filenames) => {
+      //     fpath = path.join(thumbnailFolder, filenames[0]);
+      //     show.thumbnail = fpath;
+      //    })
+      //    .on('end', (err) => { resolve (fpath); })
+      //    .screenshots(options);
+      resolve('');
     });
    });
   }
