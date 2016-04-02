@@ -43,7 +43,7 @@ module.exports = {
       dir.thumbnail = thumbs[0];
      }
      resolve(thumbs);
-    });
+    }).catch(console.error);;
    });
   }
 
