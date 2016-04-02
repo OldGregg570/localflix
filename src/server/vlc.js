@@ -2,7 +2,8 @@
 
 const spawn = require('child_process').spawn;
 var http = require('http'),
-    config = require('../../config.json');
+    config = require('../../config.json'),
+    path = require('path');
 
 module.exports = function () {
  const vlc = spawn('vlc', ['--fullscreen' ] );
