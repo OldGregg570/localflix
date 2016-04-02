@@ -24,7 +24,9 @@ function serveHtml(file_path) {
 
 app.get('/home', serveHtml('/public/index.html'));
 
-app.post('/vlc', vlc.play);
+app.post('/vlc/play', vlc.play);
+app.post('/vlc/pause', vlc.pause);
+
 app.get('/tree/:path?/', index.getTree);
 
 let port = 8000;

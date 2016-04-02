@@ -5,6 +5,7 @@ app.controller('mainCtrl', function ($scope, $http) {
  $scope.parentStack = [];
 
  $scope.open = _open;
+ $scope.pause = _pause;
  $scope.back = _back;
 
  $http.get('/tree').success(function (tree) {
@@ -14,6 +15,10 @@ app.controller('mainCtrl', function ($scope, $http) {
 
  function _open (tile) {
   (tile.type === 'directory' ? __openDirectory : __openVideo) (tile)
+ }
+
+ function _pause () {
+  $http.post('/vlc/pause');
  }
 
  function _back() {
@@ -32,7 +37,6 @@ app.controller('mainCtrl', function ($scope, $http) {
  }
 
  function __openVideo (video) {
-  $http.post('/vlc', { file: video.path });
+  $http.post('/vlc/play', { file: video.path });
  }
-
 });
