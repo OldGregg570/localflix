@@ -76,8 +76,8 @@ module.exports = {
      //     })
      //     .on('end', (err) => { resolve (fpath); })
      //     .screenshots(options);
-     // });
     });
+   });
   }
  }
 }
