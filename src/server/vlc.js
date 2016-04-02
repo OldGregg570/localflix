@@ -15,8 +15,10 @@ module.exports = function () {
  });
 
  function sendCommand (options) {
-  options.host = '192.169.0.5';
+  options.host = 'localhost';
   options.port = 8080;
+  options.auth = ':101232';
+
   return new Promise ((resolve) => {
    http.request(options, function (response) {
     let str = '';
@@ -36,12 +38,19 @@ module.exports = function () {
    };
 
    sendCommand(options).then(() => {
-    console.log(res);
     options.path = '/requests/status.json?command=fullscreen';
-    sendCommand(options).then(console.log);
+    sendCommand(options).then(() => {
+     res.status(200);
+    });
    });
+  },
 
-   res.status(200);
+  pause: function (req, res) {
+   var options = { path: '/requests/status.json?command=in_pause', };
+   sendCommand(options).then(() => { res.status(200); });
   }
+
+
+
  }
 }
